@@ -1,51 +1,93 @@
 using System;
 
-public class Car
+namespace Lab3
 {
-    private string _brand;
-    private string _model;
-    private int _year;
-
-    public string Brand { get => _brand; set => _brand = string.IsNullOrWhiteSpace(value) ? "Unknown" : value; }
-    public string Model { get => _model; set => _model = string.IsNullOrWhiteSpace(value) ? "Unknown" : value; }
-    public int Year
+    public class DatabaseConnection : IDisposable
     {
-        get => _year;
-        set => _year = (value > DateTime.Now.Year) ? 2000 : value;
+        private bool _disposed = false;
+        private string _connectionString;
+        private bool _isConnected; 
+
+        public DatabaseConnection(string connectionString)
+        {
+            _connectionString = connectionString;
+            _isConnected = true; 
+            Console.WriteLine($"[Block pamjati] Zjednannja stvoreno dlja bazy: {_connectionString}");
+        }
+
+        public void ExecuteQuery(string query)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(nameof(DatabaseConnection), "Pomylka! Object uže znyščeno.");
+
+            if (_isConnected)
+                Console.WriteLine($"[Baza Danyh] Vykonuetsja zapyt: \"{query}\"");
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    Console.WriteLine("[Dispose(true)] Vydaljajemo kerovani resursy...");
+                }
+
+                if (_isConnected)
+                {
+                    Console.WriteLine("[Dispose] Zvilnjajemo nekerovanyj resurs: Zakryvajemo zjednannja.");
+                    _isConnected = false;
+                }
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this); 
+        }
+
+        ~DatabaseConnection()
+        {
+            Console.WriteLine("[Destructor] Systema sama čystyt object, bo pro njogo zabuly!");
+            Dispose(false);
+        }
     }
 
-    public Car() : this("Unknown", "Unknown", 2000) { }
-
-    public Car(string brand, string model, int year)
+    class Program
     {
-        Brand = brand;
-        Model = model;
-        Year = year;
-    }
+        static void Main(string[] args)
+        {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-    public void Drive() => Console.WriteLine($"Car: {Brand} {Model} ({Year})");
+            Console.WriteLine("=== SCENARIJ 1: Avtomatyčne očyščennja čerez using ===");
+            using (DatabaseConnection db1 = new DatabaseConnection("Server=MainDB;"))
+            {
+                db1.ExecuteQuery("SELECT * FROM Users");
+            } 
+            Console.WriteLine("Blok using zaveršyvsja. Object db1 vže znyščeno.\n");
 
-    ~Car() => Console.WriteLine($"[GC] Destroyed: {Brand} {Model}");
-}
+            Console.WriteLine("=== SCENARIJ 2: Ručne očyščennja bez using ===");
+            DatabaseConnection db2 = new DatabaseConnection("Server=BackupDB;");
+            db2.ExecuteQuery("UPDATE Products SET Price = 100");
+            db2.Dispose(); 
+            Console.WriteLine("My vručnu vyklykaly Dispose(). Object db2 znyščeno.\n");
 
-class Program
-{
-    static void Main()
-    {
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine("=== SCENARIJ 3: Object kynuly, čystyt zbyrač smittja ===");
+            CreateObjectAndForget();
+            
+            Console.WriteLine("Prosymo systemu prymusovo prybraty smittja...");
+            GC.Collect();
+            GC.WaitForPendingFinalizers(); 
+            
+            Console.WriteLine("\nPrograma uspišno zaveršyla robotu.");
+        }
 
-        Car car1 = new Car("Tesla", "Model S", 2022);
-        car1.Drive();
-
-        Car car2 = new Car();
-        car2.Drive();
-
-        Car car3 = new Car("Toyota", "Camry", 2030);
-        car3.Drive();
-
-        car1 = null; car2 = null; car3 = null;
-
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
+        static void CreateObjectAndForget()
+        {
+            DatabaseConnection db3 = new DatabaseConnection("Server=TestDB;");
+            db3.ExecuteQuery("INSERT INTO Logs VALUES ('Systemnyj test')");
+        }
     }
 }
