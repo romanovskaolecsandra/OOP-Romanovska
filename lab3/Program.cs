@@ -12,16 +12,16 @@ namespace Lab3
         {
             _connectionString = connectionString;
             _isConnected = true; 
-            Console.WriteLine($"[Block pamjati] Zjednannja stvoreno dlja bazy: {_connectionString}");
+            Console.WriteLine($"[Блок пам'яті] З'єднання створено для бази: {_connectionString}");
         }
 
         public void ExecuteQuery(string query)
         {
             if (_disposed)
-                throw new ObjectDisposedException(nameof(DatabaseConnection), "Pomylka! Object uže znyščeno.");
+                throw new ObjectDisposedException(nameof(DatabaseConnection), "Помилка! Об'єкт уже знищено.");
 
             if (_isConnected)
-                Console.WriteLine($"[Baza Danyh] Vykonuetsja zapyt: \"{query}\"");
+                Console.WriteLine($"[База Даних] Виконується запит: \"{query}\"");
         }
 
         protected virtual void Dispose(bool disposing)
@@ -30,12 +30,12 @@ namespace Lab3
             {
                 if (disposing)
                 {
-                    Console.WriteLine("[Dispose(true)] Vydaljajemo kerovani resursy...");
+                    Console.WriteLine("[Dispose(true)] Видаляємо керовані ресурси...");
                 }
 
                 if (_isConnected)
                 {
-                    Console.WriteLine("[Dispose] Zvilnjajemo nekerovanyj resurs: Zakryvajemo zjednannja.");
+                    Console.WriteLine("[Dispose] Звільняємо некерований ресурс: Закриваємо з'єднання.");
                     _isConnected = false;
                 }
                 _disposed = true;
@@ -50,7 +50,7 @@ namespace Lab3
 
         ~DatabaseConnection()
         {
-            Console.WriteLine("[Destructor] Systema sama čystyt object, bo pro njogo zabuly!");
+            Console.WriteLine("[Деструктор] Система сама чистить об'єкт, бо про нього забули!");
             Dispose(false);
         }
     }
@@ -59,35 +59,36 @@ namespace Lab3
     {
         static void Main(string[] args)
         {
+        
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            Console.WriteLine("=== SCENARIJ 1: Avtomatyčne očyščennja čerez using ===");
+            Console.WriteLine("=== СЦЕНАРІЙ 1: Автоматичне очищення через using ===");
             using (DatabaseConnection db1 = new DatabaseConnection("Server=MainDB;"))
             {
                 db1.ExecuteQuery("SELECT * FROM Users");
             } 
-            Console.WriteLine("Blok using zaveršyvsja. Object db1 vže znyščeno.\n");
+            Console.WriteLine("Блок using завершився. Об'єкт db1 вже знищено.\n");
 
-            Console.WriteLine("=== SCENARIJ 2: Ručne očyščennja bez using ===");
+            Console.WriteLine("=== СЦЕНАРІЙ 2: Ручне очищення без using ===");
             DatabaseConnection db2 = new DatabaseConnection("Server=BackupDB;");
             db2.ExecuteQuery("UPDATE Products SET Price = 100");
             db2.Dispose(); 
-            Console.WriteLine("My vručnu vyklykaly Dispose(). Object db2 znyščeno.\n");
+            Console.WriteLine("Ми вручну викликали Dispose(). Об'єкт db2 знищено.\n");
 
-            Console.WriteLine("=== SCENARIJ 3: Object kynuly, čystyt zbyrač smittja ===");
+            Console.WriteLine("=== СЦЕНАРІЙ 3: Об'єкт кинули, чистить збирач сміття ===");
             CreateObjectAndForget();
             
-            Console.WriteLine("Prosymo systemu prymusovo prybraty smittja...");
+            Console.WriteLine("Просимо систему примусово прибрати сміття...");
             GC.Collect();
             GC.WaitForPendingFinalizers(); 
             
-            Console.WriteLine("\nPrograma uspišno zaveršyla robotu.");
+            Console.WriteLine("\nПрограма успішно завершила роботу.");
         }
 
         static void CreateObjectAndForget()
         {
             DatabaseConnection db3 = new DatabaseConnection("Server=TestDB;");
-            db3.ExecuteQuery("INSERT INTO Logs VALUES ('Systemnyj test')");
+            db3.ExecuteQuery("INSERT INTO Logs VALUES ('Системний тест')");
         }
     }
 }
