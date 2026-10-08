@@ -22,7 +22,7 @@ namespace Lab4Fraction
             {
                 if (value == 0)
                 {
-                    throw new ArgumentException("Знаменник не може дорівнювати нулю!");
+                    throw new ArgumentException("Р—РЅР°РјРµРЅРЅРёРє РЅРµ РјРѕР¶Рµ РґРѕСЂС–РІРЅСЋРІР°С‚Рё РЅСѓР»СЋ!");
                 }
                 _denominator = value;
             }
@@ -37,7 +37,7 @@ namespace Lab4Fraction
         public static Fraction operator +(Fraction f1, Fraction f2)
         {
             if (f1 == null || f2 == null)
-                throw new ArgumentNullException("Дріб не може бути null");
+                throw new ArgumentNullException("Р”СЂС–Р± РЅРµ РјРѕР¶Рµ Р±СѓС‚Рё null");
 
             int newNumerator = f1.Numerator * f2.Denominator + f2.Numerator * f1.Denominator;
             int newDenominator = f1.Denominator * f2.Denominator;
@@ -47,7 +47,7 @@ namespace Lab4Fraction
         public static Fraction operator *(Fraction f1, Fraction f2)
         {
             if (f1 == null || f2 == null)
-                throw new ArgumentNullException("Дріб не може бути null");
+                throw new ArgumentNullException("Р”СЂС–Р± РЅРµ РјРѕР¶Рµ Р±СѓС‚Рё null");
 
             return new Fraction(f1.Numerator * f2.Numerator, f1.Denominator * f2.Denominator);
         }
@@ -101,32 +101,32 @@ namespace Lab4Fraction
             Fraction f1 = new Fraction(1, 2);
             Fraction f2 = new Fraction(2, 3);
             
-            Console.WriteLine($"Перший дріб (f1): {f1}");
-            Console.WriteLine($"Другий дріб (f2): {f2}");
+            Console.WriteLine($"РџРµСЂС€РёР№ РґСЂС–Р± (f1): {f1}");
+            Console.WriteLine($"Р”СЂСѓРіРёР№ РґСЂС–Р± (f2): {f2}");
 
             Fraction staticOne = Fraction.One;
-            Console.WriteLine($"Статична властивість Fraction.One: {staticOne}");
+            Console.WriteLine($"РЎС‚Р°С‚РёС‡РЅР° РІР»Р°СЃС‚РёРІС–СЃС‚СЊ Fraction.One: {staticOne}");
 
             Fraction sum = f1 + f2;
             Fraction product = f1 * f2;
 
-            Console.WriteLine($"\nРезультат додавання (f1 + f2): {sum}");
-            Console.WriteLine($"Результат множення (f1 * f2): {product}");
+            Console.WriteLine($"\nР РµР·СѓР»СЊС‚Р°С‚ РґРѕРґР°РІР°РЅРЅСЏ (f1 + f2): {sum}");
+            Console.WriteLine($"Р РµР·СѓР»СЊС‚Р°С‚ РјРЅРѕР¶РµРЅРЅСЏ (f1 * f2): {product}");
 
             Fraction f3 = new Fraction(2, 4);
-            Console.WriteLine($"\nНовий дріб (f3): {f3}");
+            Console.WriteLine($"\nРќРѕРІРёР№ РґСЂС–Р± (f3): {f3}");
             Console.WriteLine($"f1 == f3: {f1 == f3}");
             Console.WriteLine($"f1 != f2: {f1 != f2}");
             Console.WriteLine($"f1.Equals(f3): {f1.Equals(f3)}");
 
-            Console.WriteLine("\nСпроба створити дріб із нульовим знаменником:");
+            Console.WriteLine("\nРЎРїСЂРѕР±Р° СЃС‚РІРѕСЂРёС‚Рё РґСЂС–Р± С–Р· РЅСѓР»СЊРѕРІРёРј Р·РЅР°РјРµРЅРЅРёРєРѕРј:");
             try
             {
                 Fraction badFraction = new Fraction(5, 0);
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine($"Помилка перехоплена успішно: {ex.Message}");
+                Console.WriteLine($"РџРѕРјРёР»РєР° РїРµСЂРµС…РѕРїР»РµРЅР° СѓСЃРїС–С€РЅРѕ: {ex.Message}");
             }
         }
     }
